@@ -2,10 +2,28 @@
 #include <stdlib.h>
 #include <Windows.h>
 
-#define LEN_MIN 15
-#define LEN_MAX 50
-#define PROB_MIN 10
-#define PROB_MAX 90
+#define LEN_MIN  15   // 기차길이
+#define LEN_MAX  50
+#define STM_MIN  0    // 마동석체력
+#define STM_MAX  5
+#define PROB_MIN  10  // 확률
+#define PROB_MAX  90
+#define AGGRO_MIN  0  // 어그로범위
+#define AGGRO_MAX  5
+
+// 마동석이동방향
+#define MOVE_LEFT  1
+#define MOVE_STAY  0
+
+// 좀비의공격대상
+#define ATK_NONE  0
+#define ATK_CITIZEN  1
+#define ATK_DONGSEOK  2
+
+// 마동석행동
+#define ACTION_REST  0
+#define ACTION_PROVOKE  1
+#define ACTION_PULL  
 
 
 void intro(void)
