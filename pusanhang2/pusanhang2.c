@@ -57,21 +57,6 @@ void outro(int C, int Z)
 
 }
 
-int check(int len, int prob) //잘못된 입력인지 채크
-{
-	if (LEN_MIN > len || LEN_MAX < len)
-	{
-		return -1;
-	}
-
-	if (PROB_MIN > prob || PROB_MAX < prob)
-	{
-		return -1;
-	}
-
-	return 0;
-}
-
 void printPattern(int len, int C, int Z, int M) //기차 그림
 {
 
@@ -139,5 +124,31 @@ int zombie_move(int Z, int p, int random, int turn) //좀비 이동
 
 int main(void)
 {
+	srand((unsigned int)time(NULL));
+
+	int len = 0;
+	int stm = 0; 
+	int p = 0;
+	int turn = 1;
+
+	intro();
+
+	// 기차 길이 입력 받기
+	do {
+		printf("train length(%d~%d)>> ", LEN_MIN, LEN_MAX);
+		scanf_s("%d", &len);
+	} while (len < LEN_MIN || len > LEN_MAX);
+
+	// 마동석 체력 입력 받기
+	do {
+		printf("madongseokstamina(%d~%d)>> ", STM_MIN, STM_MAX);
+		scanf_s("%d", &stm);
+	} while (stm < STM_MIN || stm > STM_MAX);
+
+	// 확률 입력 받기
+	do {
+		printf("percentile probability 'p' (%d~%d)>> ", PROB_MIN, PROB_MAX);
+		scanf_s("%d", &p);
+	} while (p < PROB_MIN || p > PROB_MAX);
 
 }
