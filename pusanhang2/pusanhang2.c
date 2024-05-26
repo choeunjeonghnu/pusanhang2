@@ -23,7 +23,7 @@
 // 마동석행동
 #define ACTION_REST  0
 #define ACTION_PROVOKE  1
-#define ACTION_PULL  
+#define ACTION_PULL  2
 
 C_aggro = 1;
 
