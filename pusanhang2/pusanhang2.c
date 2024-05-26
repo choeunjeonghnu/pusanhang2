@@ -141,7 +141,7 @@ int main(void)
 
 	// 마동석 체력 입력 받기
 	do {
-		printf("madongseokstamina(%d~%d)>> ", STM_MIN, STM_MAX);
+		printf("madongseok stamina(%d~%d)>> ", STM_MIN, STM_MAX);
 		scanf_s("%d", &stm);
 	} while (stm < STM_MIN || stm > STM_MAX);
 
@@ -151,4 +151,40 @@ int main(void)
 		scanf_s("%d", &p);
 	} while (p < PROB_MIN || p > PROB_MAX);
 
+	int C = len - 6; //시민
+	int Z = len - 3; //좀비
+	int M = len - 2; //마동석
+
+	printPattern(len, C, Z, M); //열차 초기 상태 출력
+
+	while (1)
+	{
+
+		int prevC = C;
+		int prevZ = Z;
+		int prevM = M;
+
+		int random = rand() % 100;
+
+		C = citizen_move(C, p, random); //시민 이동
+		Z = zombie_move(Z, p, random, turn); //좀비 이동
+
+		printPattern(len, C, Z, M); //열차 상태 출력
+		printStatus(prevC, C, prevZ, Z); //시민, 좀비 상태 출력
+
+		if (C == 1) //시민이 왼쪽 끝에 도달하면 구출 성공
+		{
+			break;
+		}
+		if (C + 1 == Z) //좀비가 시민 바로 옆 칸에 도착했으면 구출 실패
+		{
+			break;
+		}
+
+		turn++;
+	}
+
+	outro(C, Z); //종료 상태 출력 (성공/실패)
 }
+
+
