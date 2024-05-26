@@ -25,6 +25,7 @@
 #define ACTION_PROVOKE  1
 #define ACTION_PULL  
 
+C_aggro = 1;
 
 void intro(void)
 {
@@ -78,12 +79,23 @@ void printPattern(int len, int C, int Z, int M) //기차 그림
 
 void printStatus(int prevC, int C, int prevZ, int Z)
 {
-	if (prevC > C) {
+	int prevC_aggro = C_aggro; // C_aggro의 이전 값을 저장
+
+	if (prevC != C) {
+		// 시민이 이동한 경우
 		printf("\ncitizen: %d -> %d\n", prevC, C);
+		if (C_aggro < AGGRO_MAX) {
+			C_aggro++;
+		}
 	}
 	else {
-		printf("\ncitizen: stay %d\n", C);
+		// 시민이 이동하지 않은 경우
+		printf("\ncitizen: %d -> %d\n", prevC, C);
+		if (C_aggro > AGGRO_MIN) {
+			C_aggro--;
+		}
 	}
+	printf("(aggro: %d -> %d)\n", prevC_aggro, C_aggro);
 
 	if (prevZ > Z) {
 		printf("zombie: %d -> %d\n\n", prevZ, Z);
@@ -154,6 +166,8 @@ int main(void)
 	int C = len - 6; //시민
 	int Z = len - 3; //좀비
 	int M = len - 2; //마동석
+	int C_aggro = 1; //시민 어그로
+	int M_aggro = 1; //마동석 어그로
 
 	printPattern(len, C, Z, M); //열차 초기 상태 출력
 
@@ -163,6 +177,8 @@ int main(void)
 		int prevC = C;
 		int prevZ = Z;
 		int prevM = M;
+		int prevC_aggro = C_aggro;
+		int prevM_aggro = M_aggro;
 
 		int random = rand() % 100;
 
@@ -171,6 +187,7 @@ int main(void)
 
 		printPattern(len, C, Z, M); //열차 상태 출력
 		printStatus(prevC, C, prevZ, Z); //시민, 좀비 상태 출력
+		//마동석 이동
 
 		if (C == 1) //시민이 왼쪽 끝에 도달하면 구출 성공
 		{
