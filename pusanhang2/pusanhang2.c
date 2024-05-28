@@ -61,6 +61,7 @@ void outro(int C, int Z)
 
 void printPattern(int len, int C, int Z, int M) //기차 그림
 {
+	printf("\n");
 
 	for (int i = 0; i < len; i++) {printf("#");}
 	printf("\n");
@@ -78,31 +79,60 @@ void printPattern(int len, int C, int Z, int M) //기차 그림
 	printf("\n");
 }
 
-void printStatus(int prevC, int C, int prevZ, int Z, int turn)
+void printStatus(int prevC, int C, int prevZ, int Z, int turn) //시민과 좀비의 상태 출력
 {
-	int prevC_aggro = C_aggro; // C_aggro의 이전 값을 저장
+	int prevC_aggro = C_aggro; 
 
 	if (prevC != C) {
-		// 시민이 이동한 경우
-		printf("\ncitizen: %d -> %d\n", prevC, C);
+		// 시민 이동
+		printf("\ncitizen: %d -> %d ", prevC, C);
 		if (C_aggro < AGGRO_MAX) {
 			C_aggro++;
 		}
 	}
 	else {
-		// 시민이 이동하지 않은 경우
-		printf("\ncitizen: %d -> %d\n", prevC, C);
+		printf("\ncitizen: %d -> %d ", prevC, C);
 		if (C_aggro > AGGRO_MIN) {
 			C_aggro--;
 		}
 	}
 	printf("(aggro: %d -> %d)\n", prevC_aggro, C_aggro);
 
-	if (turn % 2 == 1) {
+	if (turn % 2 == 1) { //좀비 이동
 		if (prevZ != Z) {printf("zombie: %d -> %d\n\n", prevZ, Z);}
 		else {printf("zombie: stay %d (cannot move)\n\n", Z);}
 	}
 	else {printf("zombie: stay %d (cannot move this turn)\n\n", Z);} 
+}
+
+void printStatus2(int prevM, int M, int stm) //마동석 상태 출력
+{
+	int prevM_aggro = M_aggro;
+	//마동석 이동
+	if (prevM != M)
+	{
+		if (M_aggro < AGGRO_MAX)
+		{
+			M_aggro++;
+			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d)", prevM, M, prevM_aggro, M_aggro, stm);
+		}
+		else
+		{
+			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d)", prevM, M, prevM_aggro, M_aggro, stm);
+		}
+	}
+	else if (prevM == M)
+	{
+		if (M_aggro > AGGRO_MIN)
+		{
+			M_aggro--;
+			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d", M, prevM_aggro, M_aggro, stm);
+		}
+		else
+		{
+			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d", M, prevM_aggro, M_aggro, stm);
+		}
+	}
 }
 
 int citizen_move(int C, int p, int random) //시민 이동
@@ -145,6 +175,39 @@ int zombie_move(int Z, int p, int random, int turn, int C, int M) //좀비 이동
 	return Z;
 }
 
+int madongseok_move(int M, int Z) //마동석 이동
+{
+	int choice;
+
+	if (M - 1 == Z)
+	{
+		while (1) {
+			printf("madongseock move (0: stay)>> ");
+			scanf_s("%d", &choice);
+			if (choice != 0)
+			{
+				printf("You can only enter 0\n");
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		printf("madongseok move(0: stay, 1:left) >> ");
+		scanf_s("%d", &choice);
+
+		if (choice == 1)
+		{
+			M = M - 1;
+		}
+	}
+
+	return M;
+}
+
 int main(void) 
 {
 	srand((unsigned int)time(NULL));
@@ -153,6 +216,7 @@ int main(void)
 	int stm = 0; 
 	int p = 0;
 	int turn = 1;
+
 
 	intro();
 
@@ -177,8 +241,7 @@ int main(void)
 	int C = len - 6; //시민
 	int Z = len - 3; //좀비
 	int M = len - 2; //마동석
-	int C_aggro = 1; //시민 어그로
-	int M_aggro = 1; //마동석 어그로
+
 
 	printPattern(len, C, Z, M); //열차 초기 상태 출력
 
@@ -195,10 +258,15 @@ int main(void)
 
 		C = citizen_move(C, p, random); //시민 이동
 		Z = zombie_move(Z, p, random, turn, C, M); //좀비 이동
+		
 
 		printPattern(len, C, Z, M); //열차 상태 출력
 		printStatus(prevC, C, prevZ, Z, turn); //시민, 좀비 상태 출력
-		//마동석 이동
+
+		M = madongseok_move(M, Z); //마동석 이동
+
+		printPattern(len, C, Z, M); //열차 상태 출력
+		printStatus2(prevM, M, stm); //마동석 상태 출력
 
 		if (C == 1) //시민이 왼쪽 끝에 도달하면 구출 성공
 		{
