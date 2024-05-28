@@ -25,7 +25,8 @@
 #define ACTION_PROVOKE  1
 #define ACTION_PULL  2
 
-C_aggro = 1;
+int C_aggro = 1;
+int M_aggro = 1;
 
 void intro(void)
 {
@@ -77,7 +78,7 @@ void printPattern(int len, int C, int Z, int M) //기차 그림
 	printf("\n");
 }
 
-void printStatus(int prevC, int C, int prevZ, int Z)
+void printStatus(int prevC, int C, int prevZ, int Z, int turn)
 {
 	int prevC_aggro = C_aggro; // C_aggro의 이전 값을 저장
 
@@ -97,12 +98,11 @@ void printStatus(int prevC, int C, int prevZ, int Z)
 	}
 	printf("(aggro: %d -> %d)\n", prevC_aggro, C_aggro);
 
-	if (prevZ > Z) {
-		printf("zombie: %d -> %d\n\n", prevZ, Z);
+	if (turn % 2 == 1) {
+		if (prevZ != Z) {printf("zombie: %d -> %d\n\n", prevZ, Z);}
+		else {printf("zombie: stay %d (cannot move)\n\n", Z);}
 	}
-	else {
-		printf("zombie: stay %d (cannot move)\n\n", Z);
-	}
+	else {printf("zombie: stay %d (cannot move this turn)\n\n", Z);} 
 }
 
 int citizen_move(int C, int p, int random) //시민 이동
@@ -118,23 +118,34 @@ int citizen_move(int C, int p, int random) //시민 이동
 	return C;
 }
 
-int zombie_move(int Z, int p, int random, int turn) //좀비 이동
+int zombie_move(int Z, int p, int random, int turn, int C, int M) //좀비 이동
 {
-	if (turn % 2 == 1)
-	{
-		if (random < p)
+	if (turn % 2 == 1) //좀비 이동 턴
+		if (turn % 2 == 1) //좀비 이동 턴
 		{
-			if (Z > 0)
+			if (random < p)
 			{
-				Z = Z - 1;
+				if (C_aggro > M_aggro) {
+					if (Z - 1 != C) { // 시민과 인접하지 않은 경우에만 이동
+						Z = Z - 1;
+					}
+				}
+				else if (M_aggro > C_aggro) {
+					if (Z + 1 != M) { // 마동석과 인접하지 않은 경우에만 이동
+						Z = Z + 1;
+					}
+				}
+				else {
+					if (Z - 1 != C) { // 시민과 인접하지 않은 경우에만 이동
+						Z = Z - 1;
+					}
+				}
 			}
 		}
-	}
-
 	return Z;
 }
 
-int main(void)
+int main(void) 
 {
 	srand((unsigned int)time(NULL));
 
@@ -183,17 +194,13 @@ int main(void)
 		int random = rand() % 100;
 
 		C = citizen_move(C, p, random); //시민 이동
-		Z = zombie_move(Z, p, random, turn); //좀비 이동
+		Z = zombie_move(Z, p, random, turn, C, M); //좀비 이동
 
 		printPattern(len, C, Z, M); //열차 상태 출력
-		printStatus(prevC, C, prevZ, Z); //시민, 좀비 상태 출력
+		printStatus(prevC, C, prevZ, Z, turn); //시민, 좀비 상태 출력
 		//마동석 이동
 
 		if (C == 1) //시민이 왼쪽 끝에 도달하면 구출 성공
-		{
-			break;
-		}
-		if (C + 1 == Z) //좀비가 시민 바로 옆 칸에 도착했으면 구출 실패
 		{
 			break;
 		}
