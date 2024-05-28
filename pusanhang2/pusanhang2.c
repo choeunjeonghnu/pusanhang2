@@ -53,12 +53,12 @@ void outro(end)
 	}
 	else if (end == 1)
 	{
-		printf("citizen does noting.");
-		printf("GAME OVER! citizen dead...");
+		printf("citizen does noting.\n");
+		printf("GAME OVER! citizen dead...\n");
 	}
 	else if (end == 2)
 	{
-		printf("GAME OVER! madongseok dead...");
+		printf("GAME OVER! madongseok dead...\n");
 	}
 }
 
@@ -117,11 +117,11 @@ void printStatus2(int prevM, int M, int stm) //마동석 상태 출력
 		if (M_aggro < AGGRO_MAX)
 		{
 			M_aggro++;
-			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d\n)", prevM, M, prevM_aggro, M_aggro, stm);
+			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d)\n", prevM, M, prevM_aggro, M_aggro, stm);
 		}
 		else
 		{
-			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d\n)", prevM, M, prevM_aggro, M_aggro, stm);
+			printf("\nmadongseok: %d -> %d (aggro : % d -> % d, stamina: %d)\n", prevM, M, prevM_aggro, M_aggro, stm);
 		}
 	}
 	else if (prevM == M)
@@ -129,11 +129,11 @@ void printStatus2(int prevM, int M, int stm) //마동석 상태 출력
 		if (M_aggro > AGGRO_MIN)
 		{
 			M_aggro--;
-			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d\n", M, prevM_aggro, M_aggro, stm);
+			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d)\n", M, prevM_aggro, M_aggro, stm);
 		}
 		else
 		{
-			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d\n", M, prevM_aggro, M_aggro, stm);
+			printf("\nmadongseock: stay %d (aggro: %d -> %d, stamina: %d)\n", M, prevM_aggro, M_aggro, stm);
 		}
 	}
 }
@@ -221,9 +221,11 @@ int zombie_action(int C, int Z, int M, int prevM_stm, int stm) {
 		else {
 			prevM_stm = stm;
 			stm--; // 마동석의 체력 감소
-			if (stm <= STM_MIN) {
+			if (stm <= STM_MIN)
+			{
 				end = 2; // 마동석 공격으로 마동석 체력이 STM_MIN되어 게임 종료
 			}
+			printf("Zombie attacked madongseock (aggro: %d vs %d, madongseok stamina: %d -> %d)\n", C_aggro, M_aggro, prevM_stm, stm);
 		}
 	}
 	else if (Z - 1 == C) {
@@ -236,25 +238,23 @@ int zombie_action(int C, int Z, int M, int prevM_stm, int stm) {
 		{
 			end = 2; // 마동석 공격으로 마동석 체력이 STM_MIN되어 게임 종료
 		}
+		printf("Zombie attacked madongseock (aggro: %d vs %d, madongseok stamina: %d -> %d)\n", C_aggro, M_aggro, prevM_stm, stm);
 	}
 	else {
 		printf("citizen does nothing.\n");
 		printf("zombie attacked nobody.\n");
 	}
-	if (end != 1 && end !=2) {
-		printf("Zombie attacked madongseock (aggro: %d vs %d, madongseok stamina: %d -> %d)\n", C_aggro, M_aggro, prevM_stm, stm);
-	}
 
-	return end;
+
+	return stm;
 }
-
-int stm = 0;
 
 int main(void) 
 {
 	srand((unsigned int)time(NULL));
 
 	int len = 0;
+	int stm = 0;
 	int p = 0;
 	int turn = 1;
 	int end;
@@ -311,24 +311,50 @@ int main(void)
 		printPattern(len, C, Z, M); //열차 상태 출력
 		printStatus2(prevM, M, stm); //마동석 상태 출력
 
-		end = zombie_action(C, Z, M, prevM_stm, stm); //좀비 행동으로 인한 게임 종료 확인
+		stm = zombie_action(C, Z, M, prevM_stm, stm); //좀비 행동
 
-		if (C == 1) //시민 행동
+		//게임 종료 조건
+		if (C == 1) 
 		{
 			end = 0;
 			break;
 		}
-		
-		
-		if (end == 1 || end == 2)
+		if (Z - 1 == C && Z + 1 == M) 
 		{
+			if (C_aggro > M_aggro) 
+			{
+				end = 1;
+				break;
+			}
+			else 
+			{
+				if (stm <= STM_MIN)
+				{
+					end = 2; // 마동석 공격으로 마동석 체력이 STM_MIN되어 게임 종료
+					break;
+				}
+			}
+		}
+		else if (Z - 1 == C) 
+		{
+			end = 1; // 시민 공격으로 게임 종료
 			break;
 		}
+		else if (Z + 1 == M)
+		{
+			if (stm <= STM_MIN)
+			{
+				end = 2; // 마동석 공격으로 마동석 체력이 STM_MIN되어 게임 종료
+				break;
+			}
+
+		}
+		
 
 		turn++;
 	}
 
-	outro(end); //종료 상태 출력 (성공/실패)
+	outro(end); //종료 상태 출력 
 }
 
 
