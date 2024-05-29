@@ -38,12 +38,8 @@ void intro(void)
 	printf("I_I_I__I______GBW____=====I_I_I_I=====____GBW______I__I_I_I I GBW     I   I  \n");
 	printf("`-'O==O~=============~O==O`-'~`-'O==O~=============~O==O`-'~~o==o~~~~~~~~~~~~\n");
 	printf("\n마동석에 빙의해서\n");
-	Sleep(1000);
 	printf("좀비로부터\n");
-	Sleep(1000);
 	printf("시민을 지켜라!\n");
-	Sleep(1000);
-	system("cls");
 }
 
 
@@ -192,21 +188,27 @@ int madongseok_move(int M, int Z) //마동석 이동
 	{
 		while (1) {
 			printf("madongseock move (0: stay)>> ");
-			scanf_s("%d", &choice);
-			if (choice != 0)
-			{
-				printf("You can only enter 0\n");
+			if (scanf_s("%d", &choice) != 1 || choice != 0) {
+				printf("Invalid input. Please enter 0.\n");
+				while (getchar() != '\n'); // 입력 버퍼 비우기
 			}
-			else
-			{
+			else {
 				break;
 			}
 		}
 	}
 	else
 	{
-		printf("madongseok move(0: stay, 1:left) >> ");
-		scanf_s("%d", &choice);
+		while (1) {
+			printf("madongseok move(0: stay, 1:left) >> ");
+			if (scanf_s("%d", &choice) != 1 || (choice != 0 && choice != 1)) {
+				printf("Invalid input. Please enter 0 or 1.\n");
+				while (getchar() != '\n'); // 입력 버퍼 비우기
+			}
+			else {
+				break;
+			}
+		}
 
 		if (choice == 1)
 		{
@@ -260,8 +262,16 @@ void madongseok_action(int M, int Z, int p) {
 	int prevM_aggro = M_aggro;
 
 	if (M - 1 != Z) {
-		printf("madongseok action(0. rest, 1.provoke)>> ");
-		scanf_s("%d", &choice);
+		while (1) {
+			printf("madongseok action(0. rest, 1.provoke)>> ");
+			if (scanf_s("%d", &choice) != 1 || (choice != ACTION_REST && choice != ACTION_PROVOKE)) {
+				printf("Invalid input. Please enter 0 or 1.\n");
+				while (getchar() != '\n'); // 입력 버퍼 비우기
+			}
+			else {
+				break;
+			}
+		}
 
 		if (choice == ACTION_REST) {
 			stm++;
@@ -284,8 +294,16 @@ void madongseok_action(int M, int Z, int p) {
 		}
 	}
 	else {
-		printf("madongseok action(0. rest, 1.provoke, 2.pull)>> ");
-		scanf_s("%d", &choice);
+		while (1) {
+			printf("madongseok action(0. rest, 1.provoke, 2.pull)>> ");
+			if (scanf_s("%d", &choice) != 1 || (choice != ACTION_REST && choice != ACTION_PROVOKE && choice != ACTION_PULL)) {
+				printf("Invalid input. Please enter 0, 1, or 2.\n");
+				while (getchar() != '\n'); // 입력 버퍼 비우기
+			}
+			else {
+				break;
+			}
+		}
 
 		if (choice == ACTION_REST) {
 			stm++;
