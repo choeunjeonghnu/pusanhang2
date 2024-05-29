@@ -249,12 +249,42 @@ int zombie_action(int C, int Z, int M, int prevM_stm, int stm) {
 	return stm;
 }
 
+void madongseok_action(int M, int Z, int C) {
+	int choice;
+	int prevM_stm = stm;
+	int prevM_aggro = M_aggro;
+
+	if (M - 1 != Z) {
+		printf("madongseok action(0. rest, 1.provoke)>> ");
+		scanf_s("%d", &choice);
+
+		if (choice == ACTION_REST) {
+			stm++;
+			if (stm > STM_MAX) {
+				stm = STM_MAX;
+			}
+
+			M_aggro--;
+			if (M_aggro < AGGRO_MIN) {
+				M_aggro = AGGRO_MIN;
+			}
+
+			printf("madongseok rests... \n");
+			printf("madongseok: %d (aggro: %d -> %d, stamina: %d -> %d)\n", M, prevM_aggro, M_aggro, prevM_stm, stm);
+		}
+		else if (choice == ACTION_PROVOKE) {
+			M_aggro = AGGRO_MAX;
+			printf("madongseock provoked zombie...\n");
+			printf("madongseock: %d (aggro: %d -> %d, stamina: %d)\n", M, prevM_aggro, M_aggro, stm);
+		}
+	}
+}
+
 int main(void) 
 {
 	srand((unsigned int)time(NULL));
 
 	int len = 0;
-	int stm = 0;
 	int p = 0;
 	int turn = 1;
 	int end;
@@ -312,6 +342,8 @@ int main(void)
 		printStatus2(prevM, M, stm); //마동석 상태 출력
 
 		stm = zombie_action(C, Z, M, prevM_stm, stm); //좀비 행동
+	madongseok_action(M, Z, C, prevM_stm, stm, prevM_aggro, M_aggro);
+
 
 		//게임 종료 조건
 		if (C == 1) 
